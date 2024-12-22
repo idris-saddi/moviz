@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { NavBarComponent } from '../../components/navbar/nav-bar.component';
 import { SegmentedControlComponent } from '../../components/segmented-control/segmented-control.component';
 import { InputComponent } from '../../components/input/input.component';
 import { RateChipComponent } from '../../components/rate-chip/rate-chip.component';
@@ -11,7 +10,6 @@ import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-c
   selector: 'app-test',
   standalone: true,
   imports: [
-    NavBarComponent,
     SegmentedControlComponent,
     InputComponent,
     RateChipComponent,

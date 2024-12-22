@@ -1,24 +1,25 @@
-
 <div class="nav-bar-container">
-    <div class="nav-content">
-        <div (click)="homePage()" class="logo-section">
-
-        </div>
-            @if (navItems && navItems.length > 0) {
-                <ul>
-                    @for (nav of navItems; track $index) {
-                        <li [ngClass]="{'active-item': nav.active}" (click)="selectedItem(nav)">{{nav.name}}
-                            @if (nav.icon) {
-                                <i class="{{nav.icon}}"></i>
-                            }
-                            
-                        </li>
-                    }
-                
-                </ul>
-            }
-            
-    </div>
-    
-    
+  <div class="nav-content">
+    <a routerLink="">
+      <div class="logo-section"></div>
+    </a>
+    @if (navItems && navItems.length > 0) {
+    <ul>
+      @for (nav of navItems; track $index) {
+      <li>
+        <a
+          [routerLink]="nav.path"
+          routerLinkActive="active-item"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          {{ nav.name }}
+          @if (nav.icon) {
+          <i class="{{ nav.icon }}"></i>
+          }
+        </a>
+      </li>
+      }
+    </ul>
+    }
+  </div>
 </div>

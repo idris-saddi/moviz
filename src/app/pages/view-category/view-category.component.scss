@@ -1,11 +1,9 @@
-// @use "../../../themes/theme.scss" as theme;
-
-.home-container {
+.view-category-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  .home-content {
+  .view-category-content {
     display: flex;
     flex-direction: column;
     row-gap: 24px;

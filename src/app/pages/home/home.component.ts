@@ -71,7 +71,7 @@ export class HomeComponent implements OnInit {
   getAllTrending() {
     this.genericHttpService.httpGet(Endpoints.TRENDS).subscribe({
       next: (res: TrendData) => {
-        console.log(res.results);
+        // console.log(res.results);
 
         this.movieCards = res.results
           .map((item: TrendsResult) => {
@@ -105,7 +105,7 @@ export class HomeComponent implements OnInit {
               movieName: item.original_name,
               rate: item.vote_average,
               onClick: () => {
-                console.log('Click : ', item);
+                // console.log('Click : ', item);
 
                 this.router.navigateByUrl(`tvshow/${item.id}`);
               },
