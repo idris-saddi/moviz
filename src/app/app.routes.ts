@@ -3,6 +3,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { TestComponent } from './pages/test/test.component';
 import { DetailComponent } from './pages/detail/detail.component';
 import { ViewCategoryComponent } from './pages/view-category/view-category.component';
+import { LoginPageComponent } from './pages/login-page/login-page.component';
 
 export const routes: Routes = [
   {
@@ -33,5 +34,9 @@ export const routes: Routes = [
   {
     path: 'tvshows',
     component: ViewCategoryComponent,
+  },
+  {
+    path: 'login',
+    component: LoginPageComponent,
   },
 ];

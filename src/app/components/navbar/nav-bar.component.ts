@@ -15,18 +15,15 @@ export class NavBarComponent {
     {
       name: 'Movie',
       path: 'movies',
-      active: false,
     },
     {
       name: 'TV Shows',
       path: 'tvshows',
-      active: false,
     },
     {
       name: 'Suggest me',
       path: 'suggests',
       icon: 'bi bi-arrow-right',
-      active: false,
     },
   ];
 }
