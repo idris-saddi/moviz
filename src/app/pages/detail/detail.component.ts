@@ -50,7 +50,7 @@ export class DetailComponent implements OnInit {
   getMovieById(id: string) {
     this.genericService.httpGet(Endpoints.MOVIE_ID(id)).subscribe({
       next: (res: MovieDetailData) => {
-        console.log(res);
+        // console.log(res);
         this.bannerConfig = {
           img: Endpoints.IMAGE_BASE + `/w1280${res.backdrop_path}`,
           pageName: 'Movies',
