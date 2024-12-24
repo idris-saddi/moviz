@@ -17,6 +17,7 @@ import { TVData, TVResult } from '../../interfaces/models/tv.interface';
 import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-control-config.interface';
 import { MovieCardConfig } from '../../interfaces/movie-card-config.interface';
 import { Endpoints } from '../../endpoints/Endpoints';
+import { SearchResult, SearchResultData } from '../../interfaces/models/search-result.interface';
 
 @Component({
   selector: 'app-home',
@@ -140,4 +141,37 @@ export class HomeComponent implements OnInit {
       },
     });
   }
+
+  search(searchValue: string) {
+    if (!searchValue.trim()) {
+      this.getAllTrending(); // search query is empty res : trending
+      return;
+    }
+
+    this.genericHttpService.httpGet(`${Endpoints.SEARCH}?query=${searchValue}`).subscribe({
+      next: (res: SearchResultData) => {
+        this.movieCards = res.results
+          .map((item: SearchResult) => {
+            return {
+              img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
+              movieName: item.original_title || item.original_name,
+              rate: item.vote_average,
+              onClick: () => {
+                if (item.first_air_date) {
+                  this.router.navigateByUrl(`tvshows/${item.id}`);
+                } else {
+                  this.router.navigateByUrl(`movie/${item.id}`);
+                }
+              },
+            } as MovieCardConfig;
+          })
+          .filter((item) => item.movieName);
+      },
+      error: (error: any) => {
+        console.error('Search Error:', error);
+      },
+    });
+  }
+  
+
 }
