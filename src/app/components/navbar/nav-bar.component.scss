@@ -7,6 +7,7 @@
   width: 100%;
   padding: 18px 0px;
   background: rgba(#121829, 0.93);
+  margin-top: -5px;
   .nav-content {
     display: flex;
     justify-content: space-between;
@@ -14,11 +15,22 @@
     width: 80%;
   }
 
+  .title-container{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    column-gap: 5px;
+  }
   .logo-section {
     width: 40px;
     height: 40px;
     cursor: pointer;
     background-image: url("../../../assets/img/logo.png");
+  }
+  .title{
+    font-size: 20px;
+    margin:0;
+    color: #b2aded;
   }
 
   ul {
@@ -73,4 +85,6 @@
       }
     }
   }
+
+
 }
