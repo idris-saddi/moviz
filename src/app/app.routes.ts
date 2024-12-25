@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { TestComponent } from './pages/test/test.component';
 import { DetailComponent } from './pages/detail/detail.component';
-import { ViewCategoryComponent } from './pages/view-category/view-category.component';
+import { HomeComponent } from './pages/home/home.component';
 import { LoginPageComponent } from './pages/login-page/login-page.component';
+import { TestComponent } from './pages/test/test.component';
+import { ViewCategoryComponent } from './pages/view-category/view-category.component';
 
 export const routes: Routes = [
   {
@@ -20,7 +20,7 @@ export const routes: Routes = [
     component: TestComponent,
   },
   {
-    path: 'tvshow/:series_id',
+    path: 'tvshows/:series_id',
     component: DetailComponent,
   },
   {

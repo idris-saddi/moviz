@@ -1,18 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { DetailBannerComponent } from '../../components/detail-banner/detail-banner.component';
-import { ActivatedRoute } from '@angular/router';
-import { GenericHttpService } from '../../services/generic-http.service';
+import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Endpoints } from '../../endpoints/Endpoints';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { DetailBannerComponent } from '../../components/detail-banner/detail-banner.component';
 import { RateChipComponent } from '../../components/rate-chip/rate-chip.component';
+import { Endpoints } from '../../endpoints/Endpoints';
 import {
   Genre,
   MovieDetailData,
 } from '../../interfaces/models/movie-detail.interface';
-import { CommonModule } from '@angular/common';
 import { TVDetailData } from '../../interfaces/models/tv-detail.interface';
-import { DetailConfig } from '../../interfaces/ui-configs/detail-config.interface';
 import { DetailBannerConfig } from '../../interfaces/ui-configs/detail-banner-config.interface';
+import { DetailConfig } from '../../interfaces/ui-configs/detail-config.interface';
+import { GenericHttpService } from '../../services/generic-http.service';
 
 @Component({
   selector: 'app-detail',
