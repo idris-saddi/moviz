@@ -1,29 +1,31 @@
+import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { InputComponent } from '../../components/input/input.component';
 import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
 import { SegmentedControlComponent } from '../../components/segmented-control/segmented-control.component';
+import { Endpoints } from '../../endpoints/Endpoints';
 import {
   MovieResult,
   MoviesData,
 } from '../../interfaces/models/movies.interface';
+import { SearchResult, SearchResultData } from '../../interfaces/models/search-result.interface';
 import {
   TrendData,
   TrendsResult,
 } from '../../interfaces/models/trends.interface';
 import { TVData, TVResult } from '../../interfaces/models/tv.interface';
 import { MovieCardConfig } from '../../interfaces/movie-card-config.interface';
-import { Endpoints } from '../../endpoints/Endpoints';
-import { SearchResult, SearchResultData } from '../../interfaces/models/search-result.interface';
-import { GenericHttpService } from '../../services/generic-http.service';
 import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-control-config.interface';
+import { GenericHttpService } from '../../services/generic-http.service';
 
 @Component({
   selector: 'app-home',
   standalone: true,
   providers: [GenericHttpService],
   imports: [
+    CommonModule,
     InputComponent,
     MovieCardComponent,
     HttpClientModule,
@@ -34,7 +36,15 @@ import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-c
 })
 export class HomeComponent implements OnInit {
   title: string = 'All';
+  Tpage=1
+  Mpage=1
+  Spage=1;
+  MinDiffScroll=200;
+  loading=false;
   movieCards: MovieCardConfig[] = [];
+  trendingCards: MovieCardConfig[] = [];
+  TVShowCards: MovieCardConfig[] = [];
+
   segments: SegmentedControlConfig[] = [
     {
       name: 'All',
@@ -54,6 +64,9 @@ export class HomeComponent implements OnInit {
     private router: Router
   ) {}
   ngOnInit(): void {
+    if(typeof window !== 'undefined'){
+      setInterval(this.onScroll.bind(this), 500) //khir melli nbindeha bel event taa el scroll
+    }
     this.segments.map((item: SegmentedControlConfig) => {
       item.onClick = () => {
         this.title = item.name;
@@ -66,15 +79,39 @@ export class HomeComponent implements OnInit {
         }
       };
     });
-    this.getAllTrending();
+    console.log('Title:', this.title);
+console.log('Trending Cards:', this.trendingCards);
+console.log('Movie Cards:', this.movieCards);
+console.log('TV Show Cards:', this.TVShowCards);
+
+  }
+  onScroll() {
+    const scrollTop = window.scrollY;
+    const scrollHeight = document.documentElement.scrollHeight;
+    const clientHeight = window.innerHeight;
+
+    if (scrollHeight - scrollTop <= clientHeight + this.MinDiffScroll) {
+      this.loadMore();
+    }
   }
 
-  getAllTrending() {
-    this.genericHttpService.httpGet(Endpoints.TRENDS).subscribe({
+  loadMore(){
+    console.log("loading", this.title, this.loading)
+    
+    if(this.loading) return;
+    this.loading = true;
+    
+    
+    this.WhichToLoad()
+  }
+
+  getAllTrending(page=1) {
+    console.log("page", page)
+    this.genericHttpService.httpGet(`trending/all/day?language=en-US&page=${page}`).subscribe({
       next: (res: TrendData) => {
         // console.log(res.results);
 
-        this.movieCards = res.results
+        const newTrendingCards = res.results
           .map((item: TrendsResult) => {
             return {
               img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
@@ -90,16 +127,22 @@ export class HomeComponent implements OnInit {
             } as MovieCardConfig;
           })
           .filter((item) => item.movieName);
+          this.trendingCards = [...this.trendingCards , ...newTrendingCards]
+          this.Tpage++;
+          this.loading=false;
       },
       error: (error: any) => {
         console.error(error);
+        this.loading=false;
       },
     });
+    
   }
-  getTVShows() {
-    this.genericHttpService.httpGet(Endpoints.TV_SHOWS).subscribe({
+  getTVShows(page=1) {
+    console.log("page", page)
+    this.genericHttpService.httpGet(`${Endpoints.TV_SHOWS}?page=${page}`).subscribe({
       next: (res: TVData) => {
-        this.movieCards = res.results
+        const newShowCards = res.results
           .map((item: TVResult) => {
             return {
               img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
@@ -113,6 +156,9 @@ export class HomeComponent implements OnInit {
             } as MovieCardConfig;
           })
           .filter((item) => item.movieName);
+          this.TVShowCards=[...this.TVShowCards, ...newShowCards]
+          this.Spage++;
+          this.loading=false;
       },
       error: (error: any) => {
         console.error(error);
@@ -120,10 +166,11 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  getMovies() {
-    this.genericHttpService.httpGet(Endpoints.MOVIES).subscribe({
+  getMovies(page=1) {
+    console.log("page", page)
+    this.genericHttpService.httpGet(`${Endpoints.MOVIES}?page=${page}`).subscribe({
       next: (res: MoviesData) => {
-        this.movieCards = res.results
+        const newMovieCards = res.results
           .map((item: MovieResult) => {
             return {
               img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
@@ -135,6 +182,9 @@ export class HomeComponent implements OnInit {
             } as MovieCardConfig;
           })
           .filter((item) => item.movieName);
+          this.movieCards=[...this.movieCards, ...newMovieCards]
+          this.Mpage++;
+          this.loading=false;
       },
       error: (error: any) => {
         console.error(error);
@@ -171,6 +221,23 @@ export class HomeComponent implements OnInit {
         console.error('Search Error:', error);
       },
     });
+  }
+  WhichToLoad() {
+  switch (this.title.toLowerCase()) {
+    case 'all':
+      this.getAllTrending(this.Tpage);
+      break;
+    case 'movies':
+      this.getMovies(this.Mpage);
+      break;
+    case 'tv shows':
+      this.getTVShows(this.Spage);
+      break;
+    default:
+      console.error('Unknown segment:', this.title);
+      this.loading = false;
+  }
+
   }
   
 
