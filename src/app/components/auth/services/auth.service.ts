@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { UserInfo, UserLogin } from '../dto/user.dto';
 import { environment } from '../../../../environments/environment';
-import { isPlatformBrowser } from '@angular/common';
 
 
 @Injectable({
@@ -36,6 +35,8 @@ export class AuthService {
   login(credentials: CredentialsDto): Observable<UserLogin> {
     return this.http.post<LoginResponseDto>(environment.login_url, credentials).pipe(
       map((response) => {
+        console.log(response);
+      
         const user: UserLogin = {
           token: response.id,
           created: response.created,
