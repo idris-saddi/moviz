@@ -1,23 +1,23 @@
+import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { InputComponent } from '../../components/input/input.component';
 import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
-import { GenericHttpService } from '../../services/generic-http.service';
-import { HttpClientModule } from '@angular/common/http';
-import {
-  TrendData,
-  TrendsResult,
-} from '../../interfaces/models/trends.interface';
 import { SegmentedControlComponent } from '../../components/segmented-control/segmented-control.component';
-import { Router } from '@angular/router';
 import {
   MovieResult,
   MoviesData,
 } from '../../interfaces/models/movies.interface';
+import {
+  TrendData,
+  TrendsResult,
+} from '../../interfaces/models/trends.interface';
 import { TVData, TVResult } from '../../interfaces/models/tv.interface';
-import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-control-config.interface';
 import { MovieCardConfig } from '../../interfaces/movie-card-config.interface';
 import { Endpoints } from '../../endpoints/Endpoints';
 import { SearchResult, SearchResultData } from '../../interfaces/models/search-result.interface';
+import { GenericHttpService } from '../../services/generic-http/generic-http.service';
+import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-control-config.interface';
 
 @Component({
   selector: 'app-home',

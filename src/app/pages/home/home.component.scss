@@ -1,4 +1,3 @@
-// @use "../../../themes/theme.scss" as theme;
 
 .home-container {
   display: flex;
@@ -12,12 +11,6 @@
     width: 80%;
     padding-top: 60px;
     .title-container {
-      .mini-title {
-        color: #b2aded;
-        font-size: 16px;
-        margin: 0px;
-      }
-
       .title {
         color: #ebeef5;
         font-size: 50px;
