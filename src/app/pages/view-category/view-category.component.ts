@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MovieCardConfig } from '../../interfaces/ui-configs/movie-card-config.interface';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GenericHttpService } from '../../services/generic-http.service';
+import { GenericHttpService } from '../../services/generic-http/generic-http.service';
 import { HttpClientModule } from '@angular/common/http';
 import { Endpoints } from '../../endpoints/Endpoints';
 import {

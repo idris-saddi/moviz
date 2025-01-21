@@ -21,14 +21,16 @@
       </li>
       }
       <li>
-        <a
-          id="login-btn"
-          routerLink="login"
-          routerLinkActive="active-item"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          Log in
-        </a>
+        @if (!authService.isAuthenticated()) {
+          <a class="nav-link" [routerLink]="['login']" routerLinkActive="active text-primary">Login</a>
+          } @if (authService.isAuthenticated()) {
+          <div class="navbar-nav ms-auto">
+            <span class="navbar-text me-3">{{
+              authService.userInfo()?.email
+              }}</span>
+            <a class="nav-link" (click)="logout()">Logout</a>
+          </div>
+          }
       </li>
     </ul>
     }

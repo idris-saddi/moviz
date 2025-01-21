@@ -17,8 +17,10 @@ import {
 } from '../../interfaces/models/trends.interface';
 import { TVData, TVResult } from '../../interfaces/models/tv.interface';
 import { MovieCardConfig } from '../../interfaces/movie-card-config.interface';
+import { Endpoints } from '../../endpoints/Endpoints';
+import { SearchResult, SearchResultData } from '../../interfaces/models/search-result.interface';
+import { GenericHttpService } from '../../services/generic-http/generic-http.service';
 import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-control-config.interface';
-import { GenericHttpService } from '../../services/generic-http.service';
 
 @Component({
   selector: 'app-home',

@@ -1,0 +1,26 @@
+input.ng-invalid.ng-touched {
+  border: 2px solid red;
+}
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home-container .home-content {
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  width: 80%;
+  padding-top: 60px;
+}
+
+.home-container .home-content .title-container .title #emailHelp{
+  color: #ebeef5;
+  font-weight: bold;
+  margin: 0px;
+}
+
+.title-container .title {
+  font-size: 50px;
+}

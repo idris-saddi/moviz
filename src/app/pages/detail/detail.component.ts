@@ -12,7 +12,7 @@ import {
 import { TVDetailData } from '../../interfaces/models/tv-detail.interface';
 import { DetailBannerConfig } from '../../interfaces/ui-configs/detail-banner-config.interface';
 import { DetailConfig } from '../../interfaces/ui-configs/detail-config.interface';
-import { GenericHttpService } from '../../services/generic-http.service';
+import { GenericHttpService } from '../../services/generic-http/generic-http.service';
 
 @Component({
   selector: 'app-detail',
