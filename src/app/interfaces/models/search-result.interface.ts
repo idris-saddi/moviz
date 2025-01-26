@@ -9,5 +9,6 @@ export interface SearchResult {
     vote_average: number;
     first_air_date?: string;
     id: number;
+    media_type: 'movie' | 'tv' | 'all'
   }
   

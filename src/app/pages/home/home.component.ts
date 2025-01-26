@@ -194,34 +194,48 @@ console.log('TV Show Cards:', this.TVShowCards);
 
   search(searchValue: string) {
     if (!searchValue.trim()) {
-      this.getAllTrending(); // search query is empty res : trending
+      this.getAllTrending(); // show trending if empty search
       return;
     }
-
+  
     this.genericHttpService.httpGet(`${Endpoints.SEARCH}?query=${searchValue}`).subscribe({
       next: (res: SearchResultData) => {
-        this.movieCards = res.results
-          .map((item: SearchResult) => {
-            return {
-              img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-              movieName: item.original_title || item.original_name,
-              rate: item.vote_average,
-              onClick: () => {
-                if (item.first_air_date) {
-                  this.router.navigateByUrl(`tvshows/${item.id}`);
-                } else {
-                  this.router.navigateByUrl(`movie/${item.id}`);
-                }
-              },
-            } as MovieCardConfig;
-          })
-          .filter((item) => item.movieName);
+        this.movieCards = [];
+        this.TVShowCards = [];
+        this.trendingCards = [];
+  
+        res.results.forEach((item: SearchResult) => {
+          const config: MovieCardConfig = {
+            img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
+            movieName: item.original_title || item.original_name,
+            rate: item.vote_average,
+            onClick: () => {
+              if (item.first_air_date) {
+                this.router.navigateByUrl(`tvshows/${item.id}`);
+              } else {
+                this.router.navigateByUrl(`movie/${item.id}`);
+              }
+            },
+          };
+  
+          if (item.media_type === 'movie') {
+            this.movieCards.push(config);
+          } else if (item.media_type === 'tv') {
+            this.TVShowCards.push(config);
+          } else {
+            this.trendingCards.push(config);
+          }
+        });
+  
+        this.WhichToLoad();
       },
       error: (error: any) => {
         console.error('Search Error:', error);
       },
     });
   }
+  
+
   WhichToLoad() {
   switch (this.title.toLowerCase()) {
     case 'all':
@@ -237,7 +251,6 @@ console.log('TV Show Cards:', this.TVShowCards);
       console.error('Unknown segment:', this.title);
       this.loading = false;
   }
-
   }
   
 
