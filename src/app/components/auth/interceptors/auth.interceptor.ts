@@ -1,25 +1,38 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpInterceptor,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { environment } from '../../../../environments/environment';
+import { Endpoints } from '../../../endpoints/Endpoints';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private authService = inject(AuthService);
-
-  /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
-
-  constructor() {}
+  private excludedURLs = [
+    Endpoints.MOVIES,
+    Endpoints.TV_SHOWS,
+    Endpoints.TRENDS,
+    Endpoints.SEARCH,
+    Endpoints.IMAGE_BASE,
+  ];
 
   intercept(
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    if (this.authService.isAuthenticated()) {
+    const isExcluded = this.excludedURLs.some((xurl) =>
+      request.url.includes(xurl)
+    );
+
+    if (this.authService.isAuthenticated() && !isExcluded) {
       const user = localStorage.getItem(environment.userkey) ?? '';
-      if(user) {
+      if (user) {
         const userObj = JSON.parse(user);
         const req = request.clone({
           setHeaders: {
@@ -29,6 +42,7 @@ export class AuthInterceptor implements HttpInterceptor {
         return next.handle(req);
       }
     }
+
     return next.handle(request);
   }
 }
