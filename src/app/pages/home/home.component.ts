@@ -202,9 +202,15 @@ console.log('TV Show Cards:', this.TVShowCards);
       next: (res: SearchResultData) => {
         this.movieCards = [];
         this.TVShowCards = [];
-        this.trendingCards = [];
-  
-        res.results.forEach((item: SearchResult) => {
+        this.trendingCards=[];
+        
+        const filteredResults = res.results.filter((item: SearchResult) => 
+          item.media_type === 'movie' || item.media_type === 'tv'
+        );
+
+        const allResults: MovieCardConfig[] = [];
+
+        filteredResults.forEach((item: SearchResult) => {
           const config: MovieCardConfig = {
             img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
             movieName: item.original_title || item.original_name,
@@ -222,11 +228,14 @@ console.log('TV Show Cards:', this.TVShowCards);
             this.movieCards.push(config);
           } else if (item.media_type === 'tv') {
             this.TVShowCards.push(config);
-          } else {
-            this.trendingCards.push(config);
           }
+
+          allResults.push(config);
         });
-  
+        
+        if (this.title.toLowerCase() === 'all') {
+          this.trendingCards = allResults; 
+        }
         this.WhichToLoad();
       },
       error: (error: any) => {
