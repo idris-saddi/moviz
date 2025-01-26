@@ -16,13 +16,37 @@
     <div class="segmented-control-section">
       <app-segmented-control [config]="segments"></app-segmented-control>
     </div>
-
     <div class="movie-cards-section">
-      @for (item of movieCards; track $index) {
-      <div class="movie-card">
-        <app-movie-card [config]="item"></app-movie-card>
-      </div>
+      <!-- Show trending cards if title is 'all' -->
+      @if (title.toLowerCase() === 'all') {
+        @for (item of trendingCards; track $index) {
+          <div class="movie-card" [attr.data-index]="$index">
+            <app-movie-card [config]="item"></app-movie-card>
+          </div>
+        }
       }
+    
+      <!-- Show movie cards if title is 'movies' -->
+      @if (title.toLowerCase() === 'movies') {
+        @for (item of movieCards; track $index) {
+          <div class="movie-card" [attr.data-index]="$index">
+            <app-movie-card [config]="item"></app-movie-card>
+          </div>
+        }
+      }
+    
+      <!-- Show TV show cards if title is 'tv shows' -->
+      @if (title.toLowerCase() === 'tv shows') {
+        @for (item of TVShowCards; track $index) {
+          <div class="movie-card" [attr.data-index]="$index">
+            <app-movie-card [config]="item"></app-movie-card>
+          </div>
+        }
+      }
+      
+      <div *ngIf="!loading" class="loading">
+        <p>Loading more...</p>
+      </div>
     </div>
-  </div>
-</div>
+    
+    
