@@ -80,11 +80,11 @@ export class HomeComponent implements OnInit {
       };
     });
     console.log('Title:', this.title);
-console.log('Trending Cards:', this.trendingCards);
-console.log('Movie Cards:', this.movieCards);
-console.log('TV Show Cards:', this.TVShowCards);
-
+    console.log('Trending Cards:', this.trendingCards);
+    console.log('Movie Cards:', this.movieCards);
+    console.log('TV Show Cards:', this.TVShowCards);
   }
+  
   onScroll() {
     const scrollTop = window.scrollY;
     const scrollHeight = document.documentElement.scrollHeight;
@@ -104,40 +104,40 @@ console.log('TV Show Cards:', this.TVShowCards);
     
     this.WhichToLoad()
   }
-
-  getAllTrending(page=1) {
-    console.log("page", page)
+  getAllTrending(page = 1) {
+    console.log("page", page);
+    
     this.genericHttpService.httpGet(`trending/all/day?language=en-US&page=${page}`).subscribe({
-      next: (res: TrendData) => {
-        // console.log(res.results);
-
-        const newTrendingCards = res.results
-          .map((item: TrendsResult) => {
-            return {
-              img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-              movieName: item.original_title || item.original_name,
-              rate: item.vote_average,
-              onClick: () => {
-                if (item.first_air_date) {
-                  this.router.navigateByUrl(`tvshows/${item.id}`);
-                } else {
-                  this.router.navigateByUrl(`movie/${item.id}`);
-                }
-              },
-            } as MovieCardConfig;
-          })
-          .filter((item) => item.movieName);
-          this.trendingCards = [...this.trendingCards , ...newTrendingCards]
-          this.Tpage++;
-          this.loading=false;
+      next: ({ results }: TrendData) => {
+        if (!results || results.length === 0) {
+          this.loading = false;
+          return;
+        }
+  
+        const newTrendingCards = results
+          .filter(({ original_title, original_name }) => original_title || original_name)
+          .map(({ backdrop_path, original_title, original_name, vote_average, first_air_date, id }: TrendsResult) => ({
+            img: `${Endpoints.IMAGE_BASE}/w500${backdrop_path}`,
+            movieName: original_title || original_name,
+            rate: vote_average,
+            onClick: () => {
+              const route = first_air_date ? `tvshows/${id}` : `movie/${id}`;
+              this.router.navigateByUrl(route);
+            },
+          }) as MovieCardConfig);
+  
+        this.trendingCards = [...this.trendingCards, ...newTrendingCards];
+        this.Tpage++;
       },
       error: (error: any) => {
         console.error(error);
-        this.loading=false;
+      },
+      complete: () => {
+        this.loading = false;
       },
     });
-    
   }
+
   getTVShows(page=1) {
     console.log("page", page)
     this.genericHttpService.httpGet(`${Endpoints.TV_SHOWS}?page=${page}`).subscribe({

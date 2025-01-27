@@ -17,8 +17,6 @@ export class PredictService {
     return this.http.post<any>(this.apiUrl, data, {
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
       },
     }
     );
