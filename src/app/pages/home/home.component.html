@@ -3,7 +3,7 @@
     <div class="title-container">
       @if (title) {
       <p class="title">
-        {{ title }} <span>({{ movieCards.length }})</span>
+        {{ title }} <span>({{ (mediaCardConfigs$ | async)?.length }})</span>
       </p>
       }
     </div>
