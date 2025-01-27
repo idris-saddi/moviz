@@ -3,8 +3,8 @@ import { SegmentedControlComponent } from '../../components/segmented-control/se
 import { InputComponent } from '../../components/input/input.component';
 import { RateChipComponent } from '../../components/rate-chip/rate-chip.component';
 import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
-import { MovieCardConfig } from '../../interfaces/movie-card-config.interface';
 import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-control-config.interface';
+import { MovieCardConfig } from '../../interfaces/ui-configs/movie-card-config.interface';
 
 @Component({
   selector: 'app-test',

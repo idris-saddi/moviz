@@ -6,7 +6,11 @@ import {
   MovieDetailData,
 } from '../../interfaces/models/movie-detail.interface';
 import { TVDetailData } from '../../interfaces/models/tv-detail.interface';
-import { catchError, from, map, of } from 'rxjs';
+import { catchError, filter, from, map, Observable, of, tap } from 'rxjs';
+import {
+  TrendData,
+  TrendsResult,
+} from '../../interfaces/models/trends.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -96,6 +100,23 @@ export class MoviesService {
       }),
       catchError((err) => {
         console.log(err);
+        return of([]);
+      })
+    );
+  }
+
+  getAllMedia(
+    page = 1,
+    mediaType: 'TRENDS' | 'MOVIES' | 'TV_SHOWS' = 'TRENDS'
+  ) {
+    const requestUrl = `${Endpoints[mediaType]}${
+      mediaType == 'MOVIES' || mediaType == 'TV_SHOWS' ? '?' : '&'
+    }page=${page}`;
+    return this.genericService.httpGet(requestUrl).pipe(
+      map((res: any) => res.results),
+      // tap((res) => console.log('service endp :', res)),
+      catchError((error) => {
+        console.error(error);
         return of([]);
       })
     );

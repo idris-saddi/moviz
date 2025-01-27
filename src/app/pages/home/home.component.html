@@ -1,7 +1,6 @@
 <div class="home-container">
   <div class="home-content">
     <div class="title-container">
-      
       @if (title) {
       <p class="title">
         {{ title }} <span>({{ movieCards.length }})</span>
@@ -14,39 +13,45 @@
     </div>
 
     <div class="segmented-control-section">
-      <app-segmented-control [config]="segments"></app-segmented-control>
+      <app-segmented-control (activeSegmentChange)="filterMediaType($event)" />
     </div>
+
     <div class="movie-cards-section">
+      @for (item of (mediaCardConfigs$ | async); track $index) {
+      <div class="movie-card" [attr.data-index]="$index">
+        <app-movie-card [config]="item" />
+      </div>
+      }
+
       <!-- Show trending cards if title is 'all' -->
-      @if (title.toLowerCase() === 'all') {
-        @for (item of trendingCards; track $index) {
-          <div class="movie-card" [attr.data-index]="$index">
-            <app-movie-card [config]="item"></app-movie-card>
-          </div>
-        }
-      }
-    
+      <!-- @if (title.toLowerCase() === 'all') { @for (item of trendingCards; track
+      $index) {
+      <div class="movie-card" [attr.data-index]="$index">
+        <app-movie-card [config]="item"></app-movie-card>
+      </div>
+      } } -->
+
       <!-- Show movie cards if title is 'movies' -->
-      @if (title.toLowerCase() === 'movies') {
-        @for (item of movieCards; track $index) {
-          <div class="movie-card" [attr.data-index]="$index">
-            <app-movie-card [config]="item"></app-movie-card>
-          </div>
-        }
-      }
-    
+      <!-- @if (title.toLowerCase() === 'movies') { @for (item of movieCards; track
+      $index) {
+      <div class="movie-card" [attr.data-index]="$index">
+        <app-movie-card [config]="item"></app-movie-card>
+      </div>
+      } } -->
+
       <!-- Show TV show cards if title is 'tv shows' -->
-      @if (title.toLowerCase() === 'tv shows') {
-        @for (item of TVShowCards; track $index) {
-          <div class="movie-card" [attr.data-index]="$index">
-            <app-movie-card [config]="item"></app-movie-card>
-          </div>
-        }
-      }
-      
-      <div *ngIf="!loading" class="loading">
+      <!-- @if (title.toLowerCase() === 'tv shows') { @for (item of TVShowCards;
+      track $index) {
+      <div class="movie-card" [attr.data-index]="$index">
+        <app-movie-card [config]="item"></app-movie-card>
+      </div>
+      } }  -->
+
+      @if(!loading){
+      <div class="loading">
         <p>Loading more...</p>
       </div>
+      }
     </div>
-    
-    
+  </div>
+</div>
