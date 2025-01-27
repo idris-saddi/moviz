@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { PredictService } from '../../services/predict/predict.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { log } from 'console';
 
 @Component({
   selector: 'app-predict',
@@ -11,7 +12,8 @@ import { CommonModule } from '@angular/common';
   standalone: true,
 })
 export class PredictComponent {
-  predictionResult = signal<number | null>(null);
+  predictionResult = signal<number>(0);
+  predictionMessage = computed<string>(() => this.setPredictionMessage(this.predictionResult() as number));
 
   // Define formData with an index signature
   formData: { [key: string]: any } = {
@@ -118,32 +120,45 @@ export class PredictComponent {
     // Send the payload to the API
     this.predictService.getPrediction(payload).subscribe(
       (response) => {
-        this.predictionResult.set(response.prediction);
+        this.predictionResult.update(response.prediction);
         // reset this form data
         for (const k in this.formData) {
           this.formData[k] = 0;
         }
-      },
-      (error) => {
-        console.error('Error making prediction:', error);
       }
     );
   }
 
-    // Handle change events
-  onChange(key: string, event: Event) {
-    const target = event.target as HTMLInputElement;
-    if (target.type === 'checkbox') {
-      this.formData[key] = target.checked ? 1 : 0;
-    }else if(target.type === 'radio'){
-      for (const k in this.formData) {
-          this.formData[k] = 0;
-      }
-      this.formData[key] = target.value;
+  // Handle change events
+  // onChange(key: string, event: Event) {
+  //   const target = event.target as HTMLInputElement;
+  //   if (target.type === 'checkbox') {
+  //     this.formData[key] = target.checked ? 1 : 0;
+  //   } else if (target.type === 'radio') {
+  //     for (const k in this.formData) {
+  //       this.formData[k] = 0;
+  //     }
+  //     this.formData[key] = target.value;
+  //   } else {
+  //     this.formData[key] = +target.value; // Convert to number
+  //   }
+  //   console.log(`Updated ${key}:`, this.formData[key]);
+  // }
 
-    } else {
-      this.formData[key] = +target.value; // Convert to number
+  // Set prediction message based on the prediction result
+  setPredictionMessage(prediction: number) : string {
+    console.log('prediction: '+ prediction);
+    switch (prediction) {
+      case 0:
+        return '';
+      case 1:
+        return 'The movie is predicted to be a flop (IMDb rating between 0 and 4).';
+      case 2:
+        return 'The movie is predicted to be average (IMDb rating between 4 and 7).';
+      case 3:
+        return 'The movie is predicted to be a hit (IMDb rating between 7 and 10).';
+      default: 
+        return 'Invalid prediction result.';
     }
-    console.log(`Updated ${key}:`, this.formData[key]);
   }
 }

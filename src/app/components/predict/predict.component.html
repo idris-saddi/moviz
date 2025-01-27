@@ -1,8 +1,8 @@
 <!-- Prediction Result -->
-@if (predictionResult() !== null) {
+@if (predictionResult() !== 0) {
   <div class="mt-4 text-center p-3">
     <h3>Prediction Result:</h3>
-    <p class="alert alert-success">{{ predictionResult() }}</p>
+    <p class="alert alert-success">{{ predictionMessage() }}</p>
   </div>
 }
 
