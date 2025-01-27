@@ -73,7 +73,7 @@ export class ViewCategoryComponent implements OnInit {
             movieName: item.original_name,
             rate: item.vote_average,
             onClick: () => {
-              this.router.navigateByUrl(`tvshow/${item.id}`);
+              this.router.navigateByUrl(`tvshows/${item.id}`);
             },
           } as MovieCardConfig;
         });

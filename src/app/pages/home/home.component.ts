@@ -16,7 +16,10 @@ import {
 } from '../../interfaces/models/trends.interface';
 import { TVData, TVResult } from '../../interfaces/models/tv.interface';
 import { MovieCardConfig } from '../../interfaces/movie-card-config.interface';
-import { SearchResult, SearchResultData } from '../../interfaces/models/search-result.interface';
+import {
+  SearchResult,
+  SearchResultData,
+} from '../../interfaces/models/search-result.interface';
 import { GenericHttpService } from '../../services/generic-http/generic-http.service';
 import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-control-config.interface';
 
@@ -36,11 +39,11 @@ import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-c
 })
 export class HomeComponent implements OnInit {
   title: string = 'All';
-  Tpage=1
-  Mpage=1
-  Spage=1;
-  MinDiffScroll=200;
-  loading=false;
+  Tpage = 1;
+  Mpage = 1;
+  Spage = 1;
+  MinDiffScroll = 200;
+  loading = false;
   movieCards: MovieCardConfig[] = [];
   trendingCards: MovieCardConfig[] = [];
   TVShowCards: MovieCardConfig[] = [];
@@ -64,8 +67,8 @@ export class HomeComponent implements OnInit {
     private router: Router
   ) {}
   ngOnInit(): void {
-    if(typeof window !== 'undefined'){
-      setInterval(this.onScroll.bind(this), 500) //khir melli nbindeha bel event taa el scroll
+    if (typeof window !== 'undefined') {
+      setInterval(this.onScroll.bind(this), 500); //khir melli nbindeha bel event taa el scroll
     }
     this.segments.map((item: SegmentedControlConfig) => {
       item.onClick = () => {
@@ -80,10 +83,9 @@ export class HomeComponent implements OnInit {
       };
     });
     console.log('Title:', this.title);
-console.log('Trending Cards:', this.trendingCards);
-console.log('Movie Cards:', this.movieCards);
-console.log('TV Show Cards:', this.TVShowCards);
-
+    console.log('Trending Cards:', this.trendingCards);
+    console.log('Movie Cards:', this.movieCards);
+    console.log('TV Show Cards:', this.TVShowCards);
   }
   onScroll() {
     const scrollTop = window.scrollY;
@@ -95,25 +97,130 @@ console.log('TV Show Cards:', this.TVShowCards);
     }
   }
 
-  loadMore(){
-    console.log("loading", this.title, this.loading)
-    
-    if(this.loading) return;
+  loadMore() {
+    console.log('loading', this.title, this.loading);
+
+    if (this.loading) return;
     this.loading = true;
-    
-    
-    this.WhichToLoad()
+
+    this.WhichToLoad();
   }
 
-  getAllTrending(page=1) {
-    console.log("page", page)
-    this.genericHttpService.httpGet(`trending/all/day?language=en-US&page=${page}`).subscribe({
-      next: (res: TrendData) => {
-        // console.log(res.results);
+  getAllTrending(page = 1) {
+    console.log('page', page);
+    this.genericHttpService
+      .httpGet(`trending/all/day?language=en-US&page=${page}`)
+      .subscribe({
+        next: (res: TrendData) => {
+          // console.log(res.results);
 
-        const newTrendingCards = res.results
-          .map((item: TrendsResult) => {
-            return {
+          const newTrendingCards = res.results
+            .map((item: TrendsResult) => {
+              return {
+                img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
+                movieName: item.original_title || item.original_name,
+                rate: item.vote_average,
+                onClick: () => {
+                  if (item.first_air_date) {
+                    this.router.navigateByUrl(`tvshows/${item.id}`);
+                  } else {
+                    this.router.navigateByUrl(`movie/${item.id}`);
+                  }
+                },
+              } as MovieCardConfig;
+            })
+            .filter((item) => item.movieName);
+          this.trendingCards = [...this.trendingCards, ...newTrendingCards];
+          this.Tpage++;
+          this.loading = false;
+        },
+        error: (error: any) => {
+          console.error(error);
+          this.loading = false;
+        },
+      });
+  }
+  getTVShows(page = 1) {
+    console.log('page', page);
+    this.genericHttpService
+      .httpGet(`${Endpoints.TV_SHOWS}?page=${page}`)
+      .subscribe({
+        next: (res: TVData) => {
+          const newShowCards = res.results
+            .map((item: TVResult) => {
+              return {
+                img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
+                movieName: item.original_name,
+                rate: item.vote_average,
+                onClick: () => {
+                  // console.log('Click : ', item);
+
+                  this.router.navigateByUrl(`tvshows/${item.id}`);
+                },
+              } as MovieCardConfig;
+            })
+            .filter((item) => item.movieName);
+          this.TVShowCards = [...this.TVShowCards, ...newShowCards];
+          this.Spage++;
+          this.loading = false;
+        },
+        error: (error: any) => {
+          console.error(error);
+        },
+      });
+  }
+
+  getMovies(page = 1) {
+    console.log('page', page);
+    this.genericHttpService
+      .httpGet(`${Endpoints.MOVIES}?page=${page}`)
+      .subscribe({
+        next: (res: MoviesData) => {
+          const newMovieCards = res.results
+            .map((item: MovieResult) => {
+              return {
+                img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
+                movieName: item.original_title,
+                rate: item.vote_average,
+                onClick: () => {
+                  this.router.navigateByUrl(`movie/${item.id}`);
+                },
+              } as MovieCardConfig;
+            })
+            .filter((item) => item.movieName);
+          this.movieCards = [...this.movieCards, ...newMovieCards];
+          this.Mpage++;
+          this.loading = false;
+        },
+        error: (error: any) => {
+          console.error(error);
+        },
+      });
+  }
+
+  search(searchValue: string) {
+    if (!searchValue.trim()) {
+      this.getAllTrending(); // show trending if empty search
+      return;
+    }
+
+    this.genericHttpService
+      .httpGet(`${Endpoints.SEARCH}?query=${searchValue}`)
+      .subscribe({
+        next: (res: SearchResultData) => {
+          this.movieCards = [];
+          this.TVShowCards = [];
+          this.trendingCards = [];
+
+          const filteredResults = res.results.filter(
+            (item: SearchResult) =>
+              item.media_type === 'movie' || item.media_type === 'tv'
+          );
+
+          const allResults: MovieCardConfig[] = [];
+
+          filteredResults.forEach((item: SearchResult) => {
+            const config: MovieCardConfig = {
               img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
               movieName: item.original_title || item.original_name,
               rate: item.vote_average,
@@ -124,143 +231,42 @@ console.log('TV Show Cards:', this.TVShowCards);
                   this.router.navigateByUrl(`movie/${item.id}`);
                 }
               },
-            } as MovieCardConfig;
-          })
-          .filter((item) => item.movieName);
-          this.trendingCards = [...this.trendingCards , ...newTrendingCards]
-          this.Tpage++;
-          this.loading=false;
-      },
-      error: (error: any) => {
-        console.error(error);
-        this.loading=false;
-      },
-    });
-    
-  }
-  getTVShows(page=1) {
-    console.log("page", page)
-    this.genericHttpService.httpGet(`${Endpoints.TV_SHOWS}?page=${page}`).subscribe({
-      next: (res: TVData) => {
-        const newShowCards = res.results
-          .map((item: TVResult) => {
-            return {
-              img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-              movieName: item.original_name,
-              rate: item.vote_average,
-              onClick: () => {
-                // console.log('Click : ', item);
+            };
 
-                this.router.navigateByUrl(`tvshow/${item.id}`);
-              },
-            } as MovieCardConfig;
-          })
-          .filter((item) => item.movieName);
-          this.TVShowCards=[...this.TVShowCards, ...newShowCards]
-          this.Spage++;
-          this.loading=false;
-      },
-      error: (error: any) => {
-        console.error(error);
-      },
-    });
-  }
+            if (item.media_type === 'movie') {
+              this.movieCards.push(config);
+            } else if (item.media_type === 'tv') {
+              this.TVShowCards.push(config);
+            }
 
-  getMovies(page=1) {
-    console.log("page", page)
-    this.genericHttpService.httpGet(`${Endpoints.MOVIES}?page=${page}`).subscribe({
-      next: (res: MoviesData) => {
-        const newMovieCards = res.results
-          .map((item: MovieResult) => {
-            return {
-              img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-              movieName: item.original_title,
-              rate: item.vote_average,
-              onClick: () => {
-                this.router.navigateByUrl(`movie/${item.id}`);
-              },
-            } as MovieCardConfig;
-          })
-          .filter((item) => item.movieName);
-          this.movieCards=[...this.movieCards, ...newMovieCards]
-          this.Mpage++;
-          this.loading=false;
-      },
-      error: (error: any) => {
-        console.error(error);
-      },
-    });
-  }
+            allResults.push(config);
+          });
 
-  search(searchValue: string) {
-    if (!searchValue.trim()) {
-      this.getAllTrending(); // show trending if empty search
-      return;
-    }
-  
-    this.genericHttpService.httpGet(`${Endpoints.SEARCH}?query=${searchValue}`).subscribe({
-      next: (res: SearchResultData) => {
-        this.movieCards = [];
-        this.TVShowCards = [];
-        this.trendingCards=[];
-        
-        const filteredResults = res.results.filter((item: SearchResult) => 
-          item.media_type === 'movie' || item.media_type === 'tv'
-        );
-
-        const allResults: MovieCardConfig[] = [];
-
-        filteredResults.forEach((item: SearchResult) => {
-          const config: MovieCardConfig = {
-            img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-            movieName: item.original_title || item.original_name,
-            rate: item.vote_average,
-            onClick: () => {
-              if (item.first_air_date) {
-                this.router.navigateByUrl(`tvshows/${item.id}`);
-              } else {
-                this.router.navigateByUrl(`movie/${item.id}`);
-              }
-            },
-          };
-  
-          if (item.media_type === 'movie') {
-            this.movieCards.push(config);
-          } else if (item.media_type === 'tv') {
-            this.TVShowCards.push(config);
+          if (this.title.toLowerCase() === 'all') {
+            this.trendingCards = allResults;
           }
-
-          allResults.push(config);
-        });
-        
-        if (this.title.toLowerCase() === 'all') {
-          this.trendingCards = allResults; 
-        }
-        this.WhichToLoad();
-      },
-      error: (error: any) => {
-        console.error('Search Error:', error);
-      },
-    });
+          this.WhichToLoad();
+        },
+        error: (error: any) => {
+          console.error('Search Error:', error);
+        },
+      });
   }
-  
 
   WhichToLoad() {
-  switch (this.title.toLowerCase()) {
-    case 'all':
-      this.getAllTrending(this.Tpage);
-      break;
-    case 'movies':
-      this.getMovies(this.Mpage);
-      break;
-    case 'tv shows':
-      this.getTVShows(this.Spage);
-      break;
-    default:
-      console.error('Unknown segment:', this.title);
-      this.loading = false;
+    switch (this.title.toLowerCase()) {
+      case 'all':
+        this.getAllTrending(this.Tpage);
+        break;
+      case 'movies':
+        this.getMovies(this.Mpage);
+        break;
+      case 'tv shows':
+        this.getTVShows(this.Spage);
+        break;
+      default:
+        console.error('Unknown segment:', this.title);
+        this.loading = false;
+    }
   }
-  }
-  
-
 }
