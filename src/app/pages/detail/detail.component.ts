@@ -5,10 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { DetailBannerComponent } from '../../components/detail-banner/detail-banner.component';
 import { RateChipComponent } from '../../components/rate-chip/rate-chip.component';
 import { Endpoints } from '../../endpoints/Endpoints';
-import {
-  Genre,
-  MovieDetailData,
-} from '../../interfaces/models/movie-detail.interface';
+import { MovieDetailData } from '../../interfaces/models/movie-detail.interface';
 import { TVDetailData } from '../../interfaces/models/tv-detail.interface';
 import { DetailBannerConfig } from '../../interfaces/ui-configs/detail-banner-config.interface';
 import { DetailConfig } from '../../interfaces/ui-configs/detail-config.interface';

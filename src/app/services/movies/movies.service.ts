@@ -1,16 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { GenericHttpService } from '../generic-http/generic-http.service';
 import { Endpoints } from '../../endpoints/Endpoints';
-import {
-  Genre,
-  MovieDetailData,
-} from '../../interfaces/models/movie-detail.interface';
+import { MovieDetailData } from '../../interfaces/models/movie-detail.interface';
 import { TVDetailData } from '../../interfaces/models/tv-detail.interface';
 import { catchError, map, of } from 'rxjs';
 import {
   SearchResult,
   SearchResultData,
 } from '../../interfaces/models/search-result.interface';
+import { Genre } from '../../interfaces/models/mediaCommon.interface';
 
 @Injectable({
   providedIn: 'root',
