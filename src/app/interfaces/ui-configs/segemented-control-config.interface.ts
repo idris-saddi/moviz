@@ -3,3 +3,5 @@ export interface SegmentedControlConfig {
   active: boolean;
   onClick?: () => any;
 }
+
+export type TabType = 'All' | 'Movies' | 'TV Shows';

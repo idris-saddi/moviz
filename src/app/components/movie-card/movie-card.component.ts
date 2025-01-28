@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MovieCardConfig } from '../../interfaces/movie-card-config.interface';
 import { RateChipComponent } from '../rate-chip/rate-chip.component';
+import { MovieCardConfig } from '../../interfaces/ui-configs/movie-card-config.interface';
 
 @Component({
   selector: 'app-movie-card',
@@ -10,9 +10,6 @@ import { RateChipComponent } from '../rate-chip/rate-chip.component';
   styleUrl: './movie-card.component.scss',
 })
 export class MovieCardComponent implements OnInit {
-  ngOnInit(): void {
-  
-  }
+  ngOnInit(): void {}
   @Input() config!: MovieCardConfig;
-
 }

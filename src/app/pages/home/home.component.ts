@@ -1,266 +1,196 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { InputComponent } from '../../components/input/input.component';
 import { MovieCardComponent } from '../../components/movie-card/movie-card.component';
 import { SegmentedControlComponent } from '../../components/segmented-control/segmented-control.component';
 import { Endpoints } from '../../endpoints/Endpoints';
+import { MoviesService } from '../../services/movies/movies.service';
 import {
-  MovieResult,
-  MoviesData,
-} from '../../interfaces/models/movies.interface';
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  finalize,
+  map,
+  Observable,
+  of,
+  scan,
+  switchMap,
+  tap,
+} from 'rxjs';
 import {
-  TrendData,
-  TrendsResult,
-} from '../../interfaces/models/trends.interface';
-import { TVData, TVResult } from '../../interfaces/models/tv.interface';
-import { MovieCardConfig } from '../../interfaces/movie-card-config.interface';
-import { SearchResult, SearchResultData } from '../../interfaces/models/search-result.interface';
-import { GenericHttpService } from '../../services/generic-http/generic-http.service';
-import { SegmentedControlConfig } from '../../interfaces/ui-configs/segemented-control-config.interface';
+  MediaSettingType,
+  MovieCardConfig,
+} from '../../interfaces/ui-configs/movie-card-config.interface';
+import { TabType } from '../../interfaces/ui-configs/segemented-control-config.interface';
+import { SearchResult } from '../../interfaces/models/search-result.interface';
+import { TrendsResult } from '../../interfaces/models/trends.interface';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  providers: [GenericHttpService],
+  providers: [],
   imports: [
     CommonModule,
     InputComponent,
     MovieCardComponent,
-    HttpClientModule,
     SegmentedControlComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
+  private movieService = inject(MoviesService);
+  private router = inject(Router);
   title: string = 'All';
-  Tpage=1
-  Mpage=1
-  Spage=1;
-  MinDiffScroll=200;
-  loading=false;
-  movieCards: MovieCardConfig[] = [];
-  trendingCards: MovieCardConfig[] = [];
-  TVShowCards: MovieCardConfig[] = [];
+  MinDiffScroll = 200;
+  loading = false;
+  searchSubject = new BehaviorSubject<string>('');
+  mediaSettingSubject = new BehaviorSubject<MediaSettingType>({
+    pagination: 1,
+    type: 'TRENDS',
+  });
 
-  segments: SegmentedControlConfig[] = [
-    {
-      name: 'All',
-      active: true,
-    },
-    {
-      name: 'Movies',
-      active: false,
-    },
-    {
-      name: 'TV Shows',
-      active: false,
-    },
-  ];
-  constructor(
-    private genericHttpService: GenericHttpService,
-    private router: Router
-  ) {}
-  ngOnInit(): void {
-    if(typeof window !== 'undefined'){
-      setInterval(this.onScroll.bind(this), 500) //khir melli nbindeha bel event taa el scroll
-    }
-    this.segments.map((item: SegmentedControlConfig) => {
-      item.onClick = () => {
-        this.title = item.name;
-        if (item.name.toLowerCase().includes('movie')) {
-          this.getMovies();
-        } else if (item.name.toLowerCase().includes('tv shows')) {
-          this.getTVShows();
-        } else {
-          this.getAllTrending();
+  // combining search and tab streams to alter media display on change
+  mediaCardConfigs$: Observable<MovieCardConfig[]> = combineLatest([
+    this.mediaSettingSubject,
+    this.searchSubject,
+  ]).pipe(
+    tap(() => (this.loading = true)),
+    switchMap(([setting, searchTerm]) => {
+      if (searchTerm) {
+        // call search
+        return this.movieService.searchMedia(searchTerm).pipe(
+          map((res) => {
+            const filteredSearch = res.filter((item) => {
+              const type = this.mediaSettingSubject.getValue().type;
+              if (type == 'MOVIES') return item.media_type == 'movie';
+              if (type == 'TV_SHOWS') return item.media_type == 'tv';
+              return true;
+            });
+            return this.prepareConfig(filteredSearch);
+          }),
+          catchError((err) => {
+            console.error(err);
+            return of([] as MovieCardConfig[]);
+          }),
+          finalize(() => {
+            this.loading = false;
+          })
+        );
+      } else {
+        // call media
+        return this.movieService
+          .getAllMedia(setting.pagination, setting.type)
+          .pipe(
+            map((res) => {
+              return this.prepareConfig(res);
+            }),
+            catchError((err) => {
+              console.error(err);
+              return of([] as MovieCardConfig[]);
+            }),
+            finalize(() => {
+              this.loading = false;
+            })
+          );
+      }
+    }),
+    scan(
+      (
+        acc: {
+          previousSearchTerm: string;
+          previousType: 'TRENDS' | 'MOVIES' | 'TV_SHOWS';
+          media: MovieCardConfig[];
+        },
+        newMedia: MovieCardConfig[]
+      ) => {
+        const currentSearchTerm = this.searchSubject.getValue();
+        const currentType = this.mediaSettingSubject.getValue().type;
+
+        // Reset media if the search term or type changes
+        if (
+          acc.previousSearchTerm !== currentSearchTerm ||
+          acc.previousType !== currentType
+        ) {
+          return {
+            previousSearchTerm: currentSearchTerm,
+            previousType: currentType,
+            media: [...newMedia],
+          };
         }
-      };
-    });
-    console.log('Title:', this.title);
-    console.log('Trending Cards:', this.trendingCards);
-    console.log('Movie Cards:', this.movieCards);
-    console.log('TV Show Cards:', this.TVShowCards);
+
+        // append new media
+        return {
+          previousSearchTerm: currentSearchTerm,
+          previousType: currentType,
+          media: [...acc.media, ...newMedia],
+        };
+      },
+      // Initial accumulator value
+      {
+        previousSearchTerm: '',
+        previousType: 'TRENDS',
+        media: [] as MovieCardConfig[],
+      }
+    ),
+    map((acc) => acc.media)
+  );
+
+  ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      setInterval(this.onScroll.bind(this), 500); //khir melli nbindeha bel event taa el scroll
+    }
   }
-  
+
+  filterMediaType(tab: TabType) {
+    this.title = tab;
+    switch (tab) {
+      case 'All':
+        this.mediaSettingSubject.next({ pagination: 1, type: 'TRENDS' });
+        break;
+      case 'Movies':
+        this.mediaSettingSubject.next({ pagination: 1, type: 'MOVIES' });
+
+        break;
+      case 'TV Shows':
+        this.mediaSettingSubject.next({ pagination: 1, type: 'TV_SHOWS' });
+        break;
+
+      default:
+        break;
+    }
+  }
+
   onScroll() {
     const scrollTop = window.scrollY;
     const scrollHeight = document.documentElement.scrollHeight;
     const clientHeight = window.innerHeight;
 
     if (scrollHeight - scrollTop <= clientHeight + this.MinDiffScroll) {
-      this.loadMore();
+      if (this.loading) return;
+      const { pagination, type } = this.mediaSettingSubject.value;
+      this.mediaSettingSubject.next({ pagination: pagination + 1, type });
     }
-  }
-
-  loadMore(){
-    console.log("loading", this.title, this.loading)
-    
-    if(this.loading) return;
-    this.loading = true;
-    
-    
-    this.WhichToLoad()
-  }
-  getAllTrending(page = 1) {
-    console.log("page", page);
-    
-    this.genericHttpService.httpGet(`trending/all/day?language=en-US&page=${page}`).subscribe({
-      next: ({ results }: TrendData) => {
-        if (!results || results.length === 0) {
-          this.loading = false;
-          return;
-        }
-  
-        const newTrendingCards = results
-          .filter(({ original_title, original_name }) => original_title || original_name)
-          .map(({ backdrop_path, original_title, original_name, vote_average, first_air_date, id }: TrendsResult) => ({
-            img: `${Endpoints.IMAGE_BASE}/w500${backdrop_path}`,
-            movieName: original_title || original_name,
-            rate: vote_average,
-            onClick: () => {
-              const route = first_air_date ? `tvshows/${id}` : `movie/${id}`;
-              this.router.navigateByUrl(route);
-            },
-          }) as MovieCardConfig);
-  
-        this.trendingCards = [...this.trendingCards, ...newTrendingCards];
-        this.Tpage++;
-      },
-      error: (error: any) => {
-        console.error(error);
-      },
-      complete: () => {
-        this.loading = false;
-      },
-    });
-  }
-
-  getTVShows(page=1) {
-    console.log("page", page)
-    this.genericHttpService.httpGet(`${Endpoints.TV_SHOWS}?page=${page}`).subscribe({
-      next: (res: TVData) => {
-        const newShowCards = res.results
-          .map((item: TVResult) => {
-            return {
-              img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-              movieName: item.original_name,
-              rate: item.vote_average,
-              onClick: () => {
-                // console.log('Click : ', item);
-
-                this.router.navigateByUrl(`tvshow/${item.id}`);
-              },
-            } as MovieCardConfig;
-          })
-          .filter((item) => item.movieName);
-          this.TVShowCards=[...this.TVShowCards, ...newShowCards]
-          this.Spage++;
-          this.loading=false;
-      },
-      error: (error: any) => {
-        console.error(error);
-      },
-    });
-  }
-
-  getMovies(page=1) {
-    console.log("page", page)
-    this.genericHttpService.httpGet(`${Endpoints.MOVIES}?page=${page}`).subscribe({
-      next: (res: MoviesData) => {
-        const newMovieCards = res.results
-          .map((item: MovieResult) => {
-            return {
-              img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-              movieName: item.original_title,
-              rate: item.vote_average,
-              onClick: () => {
-                this.router.navigateByUrl(`movie/${item.id}`);
-              },
-            } as MovieCardConfig;
-          })
-          .filter((item) => item.movieName);
-          this.movieCards=[...this.movieCards, ...newMovieCards]
-          this.Mpage++;
-          this.loading=false;
-      },
-      error: (error: any) => {
-        console.error(error);
-      },
-    });
   }
 
   search(searchValue: string) {
-    if (!searchValue.trim()) {
-      this.getAllTrending(); // show trending if empty search
-      return;
-    }
-  
-    this.genericHttpService.httpGet(`${Endpoints.SEARCH}?query=${searchValue}`).subscribe({
-      next: (res: SearchResultData) => {
-        this.movieCards = [];
-        this.TVShowCards = [];
-        this.trendingCards=[];
-        
-        const filteredResults = res.results.filter((item: SearchResult) => 
-          item.media_type === 'movie' || item.media_type === 'tv'
+    this.searchSubject.next(searchValue);
+  }
+
+  // maps service results into configs for the card component
+  prepareConfig(data: SearchResult[] | TrendsResult[]): MovieCardConfig[] {
+    return data.map((item) => ({
+      img: item.backdrop_path
+        ? Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`
+        : '',
+      movieName: item.original_title || item.original_name || '',
+      rate: item.vote_average,
+      onClick: () => {
+        this.router.navigateByUrl(
+          `${item.first_air_date ? 'tvshows' : 'movie'}/${item.id}`
         );
-
-        const allResults: MovieCardConfig[] = [];
-
-        filteredResults.forEach((item: SearchResult) => {
-          const config: MovieCardConfig = {
-            img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-            movieName: item.original_title || item.original_name,
-            rate: item.vote_average,
-            onClick: () => {
-              if (item.first_air_date) {
-                this.router.navigateByUrl(`tvshows/${item.id}`);
-              } else {
-                this.router.navigateByUrl(`movie/${item.id}`);
-              }
-            },
-          };
-  
-          if (item.media_type === 'movie') {
-            this.movieCards.push(config);
-          } else if (item.media_type === 'tv') {
-            this.TVShowCards.push(config);
-          }
-
-          allResults.push(config);
-        });
-        
-        if (this.title.toLowerCase() === 'all') {
-          this.trendingCards = allResults; 
-        }
-        this.WhichToLoad();
       },
-      error: (error: any) => {
-        console.error('Search Error:', error);
-      },
-    });
+    }));
   }
-  
-
-  WhichToLoad() {
-  switch (this.title.toLowerCase()) {
-    case 'all':
-      this.getAllTrending(this.Tpage);
-      break;
-    case 'movies':
-      this.getMovies(this.Mpage);
-      break;
-    case 'tv shows':
-      this.getTVShows(this.Spage);
-      break;
-    default:
-      console.error('Unknown segment:', this.title);
-      this.loading = false;
-  }
-  }
-  
-
 }
