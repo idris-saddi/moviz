@@ -3,4 +3,5 @@ export interface NavItemConfig {
   path: string;
   icon?: string;
   active?: boolean;
+  queryParams?: Object;
 }

@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TabType } from '../../interfaces/ui-configs/segemented-control-config.interface';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-segmented-control',
@@ -13,6 +14,15 @@ export class SegmentedControlComponent {
   @Output() activeSegmentChange = new EventEmitter<TabType>();
   tabs: TabType[] = ['All', 'Movies', 'TV Shows'];
   activeSegment: TabType = this.tabs[0];
+  private activatedRoute = inject(ActivatedRoute);
+
+  ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe((param) => {
+      if (param['currentSegment'] as TabType) {
+        this.selectItem(param['currentSegment']);
+      }
+    });
+  }
 
   selectItem(segment: TabType) {
     if (segment != this.activeSegment) {

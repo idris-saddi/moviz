@@ -22,11 +22,13 @@ export class NavBarComponent {
   navItems: NavItemConfig[] = [
     {
       name: 'Movie',
-      path: 'movies',
+      path: 'home',
+      queryParams: { currentSegment: 'Movies' },
     },
     {
       name: 'TV Shows',
-      path: 'tvshows',
+      path: 'home',
+      queryParams: { currentSegment: 'TV Shows' },
     },
     {
       name: 'Predict Success',

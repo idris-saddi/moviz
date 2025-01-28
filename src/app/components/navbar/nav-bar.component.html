@@ -1,6 +1,6 @@
 <div class="nav-bar-container">
   <div class="nav-content">
-    <a routerLink="" class="title-container">
+    <a routerLink="" [queryParams]="{}" class="title-container">
       <div class="logo-section"></div>
       <p class="title">Moviz</p>
     </a>
@@ -12,6 +12,7 @@
           [routerLink]="nav.path"
           routerLinkActive="active-item"
           [routerLinkActiveOptions]="{ exact: true }"
+          [queryParams]="nav.queryParams"
         >
           {{ nav.name }}
           @if (nav.icon) {
@@ -22,15 +23,20 @@
       }
       <li>
         @if (!authService.isAuthenticated()) {
-          <a class="nav-link" [routerLink]="['login']" routerLinkActive="active text-primary">Login</a>
-          } @if (authService.isAuthenticated()) {
-          <div class="navbar-nav ms-auto d-flex flex-row">
-            <span class="navbar-text me-3">{{
-              authService.userInfo()?.email
-              }}</span>
-            <a class="nav-link" (click)="logout()">Logout</a>
-          </div>
-          }
+        <a
+          class="nav-link"
+          [routerLink]="['login']"
+          routerLinkActive="active text-primary"
+          >Login</a
+        >
+        } @if (authService.isAuthenticated()) {
+        <div class="navbar-nav ms-auto d-flex flex-row">
+          <span class="navbar-text me-3">{{
+            authService.userInfo()?.email
+          }}</span>
+          <a class="nav-link" (click)="logout()">Logout</a>
+        </div>
+        }
       </li>
     </ul>
     }
