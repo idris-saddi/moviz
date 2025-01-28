@@ -4,3 +4,8 @@ export interface MovieCardConfig {
   movieName: string;
   onClick?: () => any;
 }
+
+export interface MediaSettingType {
+  pagination: number;
+  type: 'TRENDS' | 'MOVIES' | 'TV_SHOWS';
+}

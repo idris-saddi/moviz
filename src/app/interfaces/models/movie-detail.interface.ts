@@ -2,7 +2,6 @@ import { DetailBannerConfig } from '../ui-configs/detail-banner-config.interface
 import { DetailConfig } from '../ui-configs/detail-config.interface';
 import { BelongsToCollection, CommonDetailData } from './mediaCommon.interface';
 
-// Movie Details
 export interface MovieDetailData extends CommonDetailData {
   belongs_to_collection: BelongsToCollection;
   budget: number;

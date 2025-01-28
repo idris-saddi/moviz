@@ -18,6 +18,11 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+import {
+  MediaSettingType,
+  MovieCardConfig,
+} from '../../interfaces/ui-configs/movie-card-config.interface';
+import { TabType } from '../../interfaces/ui-configs/segemented-control-config.interface';
 
 @Component({
   selector: 'app-home',
@@ -38,13 +43,14 @@ export class HomeComponent implements OnInit {
   title: string = 'All';
   MinDiffScroll = 200;
   loading = false;
-  mediaSettingSubject = new BehaviorSubject<any>({
+  searchSubject = new BehaviorSubject<string>('');
+  mediaSettingSubject = new BehaviorSubject<MediaSettingType>({
     pagination: 1,
     type: 'TRENDS',
   });
-  searchSubject = new BehaviorSubject<string>('');
 
-  mediaCardConfigs$: Observable<any[]> = combineLatest([
+  // combining search and tab streams to alter media display on change
+  mediaCardConfigs$: Observable<MovieCardConfig[]> = combineLatest([
     this.mediaSettingSubject,
     this.searchSubject,
   ]).pipe(
@@ -53,7 +59,7 @@ export class HomeComponent implements OnInit {
       if (searchTerm) {
         // call search
         return this.movieService.searchMedia(searchTerm).pipe(
-          map((res: any[]) => {
+          map((res) => {
             return res
               .filter((item) => {
                 const type = this.mediaSettingSubject.getValue().type;
@@ -63,7 +69,7 @@ export class HomeComponent implements OnInit {
               })
               .map((item) => ({
                 img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-                movieName: item.original_title || item.original_name,
+                movieName: item.original_title || item.original_name || '',
                 rate: item.vote_average,
                 onClick: () => {
                   this.router.navigateByUrl(
@@ -74,7 +80,10 @@ export class HomeComponent implements OnInit {
           }),
           catchError((err) => {
             console.error(err);
-            return of([]); // Return an empty array on error
+            return of([] as MovieCardConfig[]);
+          }),
+          finalize(() => {
+            this.loading = false;
           })
         );
       } else {
@@ -82,10 +91,10 @@ export class HomeComponent implements OnInit {
         return this.movieService
           .getAllMedia(setting.pagination, setting.type)
           .pipe(
-            map((res: any[]) => {
+            map((res) => {
               return res.map((item) => ({
                 img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-                movieName: item.original_title || item.original_name,
+                movieName: item.original_title || item.original_name || '',
                 rate: item.vote_average,
                 onClick: () => {
                   this.router.navigateByUrl(
@@ -96,7 +105,10 @@ export class HomeComponent implements OnInit {
             }),
             catchError((err) => {
               console.error(err);
-              return of([]); // Return an empty array on error
+              return of([] as MovieCardConfig[]);
+            }),
+            finalize(() => {
+              this.loading = false;
             })
           );
       }
@@ -104,11 +116,11 @@ export class HomeComponent implements OnInit {
     scan(
       (
         acc: {
-          previousSearchTerm: string | null;
-          previousType: string | null;
-          media: unknown;
+          previousSearchTerm: string;
+          previousType: 'TRENDS' | 'MOVIES' | 'TV_SHOWS';
+          media: MovieCardConfig[];
         },
-        newMedia: unknown
+        newMedia: MovieCardConfig[]
       ) => {
         const currentSearchTerm = this.searchSubject.getValue();
         const currentType = this.mediaSettingSubject.getValue().type;
@@ -121,23 +133,25 @@ export class HomeComponent implements OnInit {
           return {
             previousSearchTerm: currentSearchTerm,
             previousType: currentType,
-            media: [...(newMedia as any[])], // Reset media
+            media: [...newMedia],
           };
         }
 
-        // Otherwise, append new media
+        // append new media
         return {
           previousSearchTerm: currentSearchTerm,
           previousType: currentType,
-          media: [...(acc.media as any[]), ...(newMedia as any[])],
+          media: [...acc.media, ...newMedia],
         };
       },
-      { previousSearchTerm: null, previousType: null, media: [] } // Initial accumulator value
+      // Initial accumulator value
+      {
+        previousSearchTerm: '',
+        previousType: 'TRENDS',
+        media: [] as MovieCardConfig[],
+      }
     ),
-    map((acc: any) => acc.media),
-    finalize(() => {
-      this.loading = false;
-    })
+    map((acc) => acc.media)
   );
 
   ngOnInit(): void {
@@ -146,7 +160,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  filterMediaType(tab: string) {
+  filterMediaType(tab: TabType) {
     this.title = tab;
     switch (tab) {
       case 'All':

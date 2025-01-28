@@ -33,10 +33,8 @@ export class MoviesService {
       .httpGet<MovieDetailData>(Endpoints.MOVIE_ID(id))
       .pipe(
         map((res: MovieDetailData) => {
-          // Prepare genres
           const genres = res.genres.map((item: Genre) => item.name).join(', ');
 
-          // Prepare bannerConfig
           const bannerConfig: DetailBannerConfig = {
             img: Endpoints.IMAGE_BASE + `/w1280${res.backdrop_path}`,
             pageName: 'Movies',
@@ -44,7 +42,6 @@ export class MoviesService {
             title: res.original_title,
           };
 
-          // Prepare config
           const config: DetailConfig = {
             img: Endpoints.IMAGE_BASE + `w500${res.poster_path}`,
             subtitle: res.tagline,
@@ -59,7 +56,6 @@ export class MoviesService {
             ],
           };
 
-          // Return a combined result
           return { bannerConfig, config };
         }),
         catchError((err) => {
@@ -74,10 +70,8 @@ export class MoviesService {
       .httpGet<TVDetailData>(Endpoints.TV_SHOW_ID(id))
       .pipe(
         map((res: TVDetailData) => {
-          // Prepare genres
           const genres = res.genres.map((item: Genre) => item.name).join(', ');
 
-          // Prepare bannerConfig
           const bannerConfig = {
             img: Endpoints.IMAGE_BASE + `/w1280${res.backdrop_path}`,
             pageName: 'TV Shows',
@@ -85,7 +79,6 @@ export class MoviesService {
             title: res.name,
           };
 
-          // Prepare config
           const config = {
             img: Endpoints.IMAGE_BASE + `w500${res.poster_path}`,
             subtitle: res.tagline,

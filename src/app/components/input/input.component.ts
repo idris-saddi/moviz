@@ -19,7 +19,6 @@ export class InputComponent {
 
   onInput(event: Event): void {
     const inputValue = (event.target as HTMLInputElement).value;
-    // this.search.emit(inputValue); // emit input to home component
     this.searchSubject.next(inputValue.trim());
   }
 }

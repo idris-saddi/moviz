@@ -8,7 +8,6 @@ import {
   Season,
 } from './mediaCommon.interface';
 
-// TV Details
 export interface TVDetailData extends CommonDetailData {
   created_by: CreatedBy[];
   episode_run_time: any[];

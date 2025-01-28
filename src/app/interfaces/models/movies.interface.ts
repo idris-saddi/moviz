@@ -7,7 +7,6 @@ export interface MoviesData {
   total_results: number;
 }
 
-// Specific Movie Result (inherits from MediaResultData for shared fields)
 export interface MovieResult extends MediaResultData {
   title: string;
   original_title: string;

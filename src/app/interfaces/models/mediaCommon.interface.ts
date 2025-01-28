@@ -32,7 +32,6 @@ export interface CommonDetailData {
   vote_count: number;
 }
 
-// Additional Interfaces
 export interface BelongsToCollection {
   id: number;
   name: string;
