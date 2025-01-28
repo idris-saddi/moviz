@@ -23,6 +23,8 @@ import {
   MovieCardConfig,
 } from '../../interfaces/ui-configs/movie-card-config.interface';
 import { TabType } from '../../interfaces/ui-configs/segemented-control-config.interface';
+import { SearchResult } from '../../interfaces/models/search-result.interface';
+import { TrendsResult } from '../../interfaces/models/trends.interface';
 
 @Component({
   selector: 'app-home',
@@ -60,23 +62,13 @@ export class HomeComponent implements OnInit {
         // call search
         return this.movieService.searchMedia(searchTerm).pipe(
           map((res) => {
-            return res
-              .filter((item) => {
-                const type = this.mediaSettingSubject.getValue().type;
-                if (type == 'MOVIES') return item.media_type == 'movie';
-                if (type == 'TV_SHOWS') return item.media_type == 'tv';
-                return true;
-              })
-              .map((item) => ({
-                img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-                movieName: item.original_title || item.original_name || '',
-                rate: item.vote_average,
-                onClick: () => {
-                  this.router.navigateByUrl(
-                    `${item.first_air_date ? 'tvshows' : 'movie'}/${item.id}`
-                  );
-                },
-              }));
+            const filteredSearch = res.filter((item) => {
+              const type = this.mediaSettingSubject.getValue().type;
+              if (type == 'MOVIES') return item.media_type == 'movie';
+              if (type == 'TV_SHOWS') return item.media_type == 'tv';
+              return true;
+            });
+            return this.prepareConfig(filteredSearch);
           }),
           catchError((err) => {
             console.error(err);
@@ -92,16 +84,7 @@ export class HomeComponent implements OnInit {
           .getAllMedia(setting.pagination, setting.type)
           .pipe(
             map((res) => {
-              return res.map((item) => ({
-                img: Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`,
-                movieName: item.original_title || item.original_name || '',
-                rate: item.vote_average,
-                onClick: () => {
-                  this.router.navigateByUrl(
-                    `${item.first_air_date ? 'tvshows' : 'movie'}/${item.id}`
-                  );
-                },
-              }));
+              return this.prepareConfig(res);
             }),
             catchError((err) => {
               console.error(err);
@@ -193,5 +176,21 @@ export class HomeComponent implements OnInit {
 
   search(searchValue: string) {
     this.searchSubject.next(searchValue);
+  }
+
+  // maps service results into configs for the card component
+  prepareConfig(data: SearchResult[] | TrendsResult[]): MovieCardConfig[] {
+    return data.map((item) => ({
+      img: item.backdrop_path
+        ? Endpoints.IMAGE_BASE + `/w500${item.backdrop_path}`
+        : '',
+      movieName: item.original_title || item.original_name || '',
+      rate: item.vote_average,
+      onClick: () => {
+        this.router.navigateByUrl(
+          `${item.first_air_date ? 'tvshows' : 'movie'}/${item.id}`
+        );
+      },
+    }));
   }
 }
