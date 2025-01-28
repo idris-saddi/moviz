@@ -17,6 +17,10 @@ import {
 import { Genre } from '../../interfaces/models/mediaCommon.interface';
 import { DetailBannerConfig } from '../../interfaces/ui-configs/detail-banner-config.interface';
 import { DetailConfig } from '../../interfaces/ui-configs/detail-config.interface';
+import {
+  TrendData,
+  TrendsResult,
+} from '../../interfaces/models/trends.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -118,12 +122,12 @@ export class MoviesService {
   getAllMedia(
     page = 1,
     mediaType: 'TRENDS' | 'MOVIES' | 'TV_SHOWS' = 'TRENDS'
-  ) {
+  ): Observable<TrendsResult[]> {
     const requestUrl = `${Endpoints[mediaType]}${
       mediaType == 'MOVIES' || mediaType == 'TV_SHOWS' ? '?' : '&'
     }page=${page}`;
-    return this.genericService.httpGet(requestUrl).pipe(
-      map((res: any) => res.results),
+    return this.genericService.httpGet<TrendData>(requestUrl).pipe(
+      map((res) => res.results),
       catchError((error) => {
         console.error(error);
         return of([]);
