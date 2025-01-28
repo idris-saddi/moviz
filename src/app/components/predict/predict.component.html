@@ -1,10 +1,13 @@
-<!-- Prediction Result -->
-@if (predictionResult() !== 0) {
-  <div class="mt-4 text-center p-3">
-    <h3>Prediction Result:</h3>
-    <p class="alert alert-success">{{ predictionMessage() }}</p>
+
+
+
+
+<div *ngIf="showModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>{{ predictionMessage() }}</h2>
+    <button (click)="closeModal()" class="btn btn-primary">Go Back And Predict Again</button>
   </div>
-}
+</div>
 
 <form (ngSubmit)="onSubmit()" class="container mt-4">
   <div class="text-center">
