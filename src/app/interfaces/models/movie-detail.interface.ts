@@ -1,3 +1,5 @@
+import { DetailBannerConfig } from '../ui-configs/detail-banner-config.interface';
+import { DetailConfig } from '../ui-configs/detail-config.interface';
 import { BelongsToCollection, CommonDetailData } from './mediaCommon.interface';
 
 // Movie Details
@@ -10,4 +12,9 @@ export interface MovieDetailData extends CommonDetailData {
   revenue: number;
   runtime: number;
   video: boolean;
+}
+
+export interface MovieDetailsResult {
+  bannerConfig: DetailBannerConfig;
+  config: DetailConfig;
 }

@@ -1,3 +1,5 @@
+import { DetailBannerConfig } from '../ui-configs/detail-banner-config.interface';
+import { DetailConfig } from '../ui-configs/detail-config.interface';
 import {
   CommonDetailData,
   CreatedBy,
@@ -20,4 +22,9 @@ export interface TVDetailData extends CommonDetailData {
   number_of_seasons: number;
   seasons: Season[];
   type: string;
+}
+
+export interface TvDetailsResult {
+  bannerConfig: DetailBannerConfig;
+  config: DetailConfig;
 }

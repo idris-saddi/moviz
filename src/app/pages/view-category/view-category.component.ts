@@ -45,7 +45,7 @@ export class ViewCategoryComponent implements OnInit {
   }
 
   getAllMovies() {
-    this.genericService.httpGet(Endpoints.MOVIES).subscribe({
+    this.genericService.httpGet<MoviesData>(Endpoints.MOVIES).subscribe({
       next: (res: MoviesData) => {
         this.movieCards = res.results.map((item: MovieResult) => {
           return {
@@ -65,7 +65,7 @@ export class ViewCategoryComponent implements OnInit {
   }
 
   getAllTvShows() {
-    this.genericService.httpGet(Endpoints.TV_SHOWS).subscribe({
+    this.genericService.httpGet<TVData>(Endpoints.TV_SHOWS).subscribe({
       next: (res: TVData) => {
         this.movieCards = res.results.map((item: TVResult) => {
           return {
