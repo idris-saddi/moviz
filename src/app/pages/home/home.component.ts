@@ -168,7 +168,7 @@ export class HomeComponent implements OnInit {
     const clientHeight = window.innerHeight;
 
     if (scrollHeight - scrollTop <= clientHeight + this.MinDiffScroll) {
-      if (this.loading) return;
+      if (this.loading || this.searchSubject.getValue() != '') return;
       const { pagination, type } = this.mediaSettingSubject.value;
       this.mediaSettingSubject.next({ pagination: pagination + 1, type });
     }

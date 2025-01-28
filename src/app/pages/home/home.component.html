@@ -21,7 +21,7 @@
       <div class="movie-card" [attr.data-index]="$index">
         <app-movie-card [config]="item" />
       </div>
-      } @if(!loading){
+      } @if(loading){
       <div class="loading">
         <p>Loading more...</p>
       </div>
