@@ -1,0 +1,77 @@
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+  }
+  
+  /* Modal Content */
+  .modal-content {
+    background: linear-gradient(145deg, #6a1b9a, #2196f3); /* Dark Blue for the modal content */
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    animation: popIn 0.5s ease;
+  }
+  
+  /* Modal Header */
+  .modal-content h2 {
+    font-size: 1.75rem;
+    color: #e96535; /* Purple color for the title */
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  
+  /* Modal Message */
+  .modal-content p {
+    font-size: 1.125rem;
+    color: #ecf0f1; /* Light grayish text for readability */
+    line-height: 1.5;
+    margin-bottom: 30px;
+  }
+  
+  /* Buttons */
+  .modal-content .btn {
+    background-color: #8e44ad; /* Purple for the button */
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Button Hover Effect */
+  .modal-content .btn:hover {
+    background-color: #9b59b6; /* Lighter purple on hover */
+  }
+  
+  /* Keyframes for fadeIn and popIn */
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes popIn {
+    0% {
+      transform: scale(0.8);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  

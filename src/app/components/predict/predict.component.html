@@ -1,0 +1,135 @@
+
+
+
+
+<div *ngIf="showModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>{{ predictionMessage() }}</h2>
+    <button (click)="closeModal()" class="btn btn-primary">Go Back And Predict Again</button>
+  </div>
+</div>
+
+<form (ngSubmit)="onSubmit()" class="container mt-4">
+  <div class="text-center">
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+
+  <!-- Metrics -->
+  <div class="mb-3 row">
+    <h3>Metrics</h3>
+    <div class="form-group col-md-6">
+      <label class="form-label">Cumulative Worldwide:</label>
+      <input
+        type="number"
+        [(ngModel)]="formData['cumulative worldwide']"
+        name="cumulativeWorldwide"
+        class="form-control"
+      />
+    </div>
+    <div class="form-group col-md-6">
+      <label class="form-label">Years Since Release:</label>
+      <input
+        type="number"
+        [(ngModel)]="formData['years since release']"
+        name="yearsSinceRelease"
+        class="form-control"
+      />
+    </div>
+  </div>
+
+  <!-- Ratings -->
+  <div class="row mb-3">
+    <h3>Ratings</h3>
+    @for (rating of ratings; track rating) {
+      <div class="form-check col-md-2">
+        <input
+          type="radio"
+          [(ngModel)]="formData[rating]"
+          [value]="rating"
+          name="rating"
+          class="form-check-input"
+        />
+        <label class="form-check-label">{{ rating }}</label>
+      </div>
+    }
+  </div>
+
+  <!-- Genres -->
+  <div class="mb-3 row">
+    <h3>Genres</h3>
+    @for (genre of [
+      'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Drama', 'Family',
+      'Fantasy', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'Romance', 'Sci-Fi',
+      'Sport', 'Thriller', 'War', 'Western'
+    ]; track genre) {
+      <div class="form-check col-md-2">
+        <input
+          type="checkbox"
+          [(ngModel)]="formData[genre]"
+          [value]="1"
+          name="genre-{{genre}}"
+          class="form-check-input"
+        />
+        <label class="form-check-label">{{ genre }}</label>
+      </div>
+    }
+  </div>
+
+  <!-- Directors -->
+  <div class="row mb-3">
+    <h3>Directors</h3>
+    @for (director of directors; track director) {
+      <div class="form-check col-md-2">
+        <input
+          type="radio"
+          [(ngModel)]="formData[director]"
+          [value]="director"
+          name="director"
+          class="form-check-input"
+        />
+        <label class="form-check-label">{{ director }}</label>
+      </div>
+    }
+  </div>
+
+  <!-- Stars -->
+  <div class="row mb-3">
+    <h3>Stars</h3>
+    @for (star of [
+      'Dwayne Johnson', 'Matthew McConaughey', 'Kevin Hart', 'Tom Hanks', 'Margot Robbie',
+      'Samuel L. Jackson', 'Jake Gyllenhaal', 'Leonardo DiCaprio', 'Anna Kendrick', 'Will Smith',
+      'Michael Fassbender', 'Mark Wahlberg', 'Ryan Reynolds', 'Joel Edgerton', 'Matt Damon',
+      'Charlize Theron', 'Jessica Chastain', 'Steve Carell', 'Nicole Kidman', 'Woody Harrelson'
+    ]; track star) {
+      <div class="form-check col-md-2">
+        <input
+          type="checkbox"
+          [(ngModel)]="formData[star]"
+          [value]="1"
+          name="star-{{star}}"
+          class="form-check-input"
+        />
+        <label class="form-check-label">{{ star }}</label>
+      </div>
+    }
+  </div>
+
+  <!-- Production Studios -->
+  <div class="row mb-3">
+    <h3>Production Studios</h3>
+    @for (studio of studios; track studio) {
+      <div class="col-md-2">
+        <div class="form-check">
+          <input
+            type="radio"
+            [(ngModel)]="formData[studio]"
+            [value]="studio"
+            name="studio"
+            class="form-check-input"
+          />
+          <label class="form-check-label">{{ studio }}</label>
+        </div>
+      </div>
+    }
+  </div>
+</form>

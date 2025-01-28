@@ -24,7 +24,7 @@
         @if (!authService.isAuthenticated()) {
           <a class="nav-link" [routerLink]="['login']" routerLinkActive="active text-primary">Login</a>
           } @if (authService.isAuthenticated()) {
-          <div class="navbar-nav ms-auto">
+          <div class="navbar-nav ms-auto d-flex flex-row">
             <span class="navbar-text me-3">{{
               authService.userInfo()?.email
               }}</span>

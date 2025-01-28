@@ -29,8 +29,8 @@ export class NavBarComponent {
       path: 'tvshows',
     },
     {
-      name: 'Suggest me',
-      path: 'suggests',
+      name: 'Predict Success',
+      path: 'predict',
       icon: 'bi bi-arrow-right',
     },
   ];
