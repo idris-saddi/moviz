@@ -4,13 +4,12 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PredictService {
-
   private apiUrl = environment.predictAPI;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   // Method to send data to the backend and receive the prediction
   getPrediction(data: any): Observable<any> {
@@ -18,7 +17,10 @@ export class PredictService {
       headers: {
         'Content-Type': 'application/json',
       },
-    }
-    );
+    });
+  }
+
+  getFeatures(): Observable<any> {
+    return this.http.get<any>(environment.featuresAPI);
   }
 }
