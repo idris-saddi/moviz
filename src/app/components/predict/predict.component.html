@@ -57,11 +57,7 @@
   <!-- Genres -->
   <div class="mb-3 row">
     <h3>Genres</h3>
-    @for (genre of [
-      'Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Drama', 'Family',
-      'Fantasy', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'Romance', 'Sci-Fi',
-      'Sport', 'Thriller', 'War', 'Western'
-    ]; track genre) {
+    @for (genre of genres; track genre) {
       <div class="form-check col-md-2">
         <input
           type="checkbox"
@@ -95,12 +91,7 @@
   <!-- Stars -->
   <div class="row mb-3">
     <h3>Stars</h3>
-    @for (star of [
-      'Dwayne Johnson', 'Matthew McConaughey', 'Kevin Hart', 'Tom Hanks', 'Margot Robbie',
-      'Samuel L. Jackson', 'Jake Gyllenhaal', 'Leonardo DiCaprio', 'Anna Kendrick', 'Will Smith',
-      'Michael Fassbender', 'Mark Wahlberg', 'Ryan Reynolds', 'Joel Edgerton', 'Matt Damon',
-      'Charlize Theron', 'Jessica Chastain', 'Steve Carell', 'Nicole Kidman', 'Woody Harrelson'
-    ]; track star) {
+    @for (star of stars; track star) {
       <div class="form-check col-md-2">
         <input
           type="checkbox"
