@@ -74,4 +74,138 @@
       transform: scale(1);
     }
   }
-  
+
+
+/* Headings */
+h3 {
+  color: #f8f9fa;
+  margin-bottom: 10px;
+}
+
+/* Labels */
+.form-label {
+  font-weight: bold;
+  color: #f8f9fa;
+}
+
+/* Styled Dropdowns */
+.form-select {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #888;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #000; /* Ensure black text */
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  appearance: none;
+  height: 35px;
+  line-height: 1.5;
+}
+
+.form-select option {
+  background-color: #fff !important; /* Ensures white background */
+  color: #000 !important; /* Ensures black text */
+}
+
+/* Hover & Focus Effects */
+.form-select:hover,
+.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Form Inputs */
+.form-control {
+  background: white;
+  color: black;
+  border: 1px solid #444;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/* Button Styling */
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+
+/* CSS */
+.button-85 {
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  background: #0e3396;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-85:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #0033cc,
+    #5a33cc,
+    #6a39cc,
+    #7a3dcc,
+    #8a42cc,
+    #9a47cc,
+    #b02acc,
+    #c02bcc,
+    #0033cc  
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button-85 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.button-85:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
